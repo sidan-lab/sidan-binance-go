@@ -295,3 +295,370 @@ func TestWalletClientMethods(t *testing.T) {
 
 	t.Log("WalletClient structure verification passed")
 }
+
+func TestDepositHistory(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	response, err := client.DepositHistory(nil)
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result []map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		t.Logf("Raw response: %s", string(response))
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Deposit history response:\n%s", string(prettyJSON))
+}
+
+func TestDepositHistoryWithParams(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	response, err := client.DepositHistory(map[string]interface{}{
+		"status": 1,
+		"limit":  10,
+	})
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result []map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Deposit history (with params) response:\n%s", string(prettyJSON))
+}
+
+func TestWithdrawalHistory(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	response, err := client.WithdrawalHistory(nil)
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result []map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		t.Logf("Raw response: %s", string(response))
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Withdrawal history response:\n%s", string(prettyJSON))
+}
+
+func TestWithdrawalHistoryWithParams(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	response, err := client.WithdrawalHistory(map[string]interface{}{
+		"status": 6,
+		"limit":  10,
+	})
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result []map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Withdrawal history (with params) response:\n%s", string(prettyJSON))
+}
+
+func TestMyTrades(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	response, err := client.MyTrades("BTCUSDT", nil)
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result []map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		t.Logf("Raw response: %s", string(response))
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("My trades response:\n%s", string(prettyJSON))
+}
+
+func TestMyTradesWithParams(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	response, err := client.MyTrades("BTCUSDT", map[string]interface{}{
+		"limit": 10,
+	})
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result []map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("My trades (with params) response:\n%s", string(prettyJSON))
+}
+
+func TestMyTradesRequiresSymbol(t *testing.T) {
+	client := NewWalletClient("test_key", "test_secret")
+
+	_, err := client.MyTrades("", nil)
+	if err == nil {
+		t.Error("Expected error for empty symbol, got nil")
+	}
+	t.Logf("Correctly returned error for empty symbol: %v", err)
+}
+
+func TestUniversalTransferHistory(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	// Test transfer from Futures to Spot (transfer in)
+	response, err := client.UniversalTransferHistory("UMFUTURE_MAIN", nil)
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		t.Logf("Raw response: %s", string(response))
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Universal transfer history (UMFUTURE_MAIN) response:\n%s", string(prettyJSON))
+}
+
+func TestUniversalTransferHistoryWithParams(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	// Test transfer from Spot to Futures (transfer out) with params
+	response, err := client.UniversalTransferHistory("MAIN_UMFUTURE", map[string]interface{}{
+		"size": 10,
+	})
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Universal transfer history (MAIN_UMFUTURE with params) response:\n%s", string(prettyJSON))
+}
+
+func TestUniversalTransferHistoryRequiresType(t *testing.T) {
+	client := NewWalletClient("test_key", "test_secret")
+
+	_, err := client.UniversalTransferHistory("", nil)
+	if err == nil {
+		t.Error("Expected error for empty type, got nil")
+	}
+	t.Logf("Correctly returned error for empty type: %v", err)
+}
+
+func TestSubAccountTransferHistory(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	// Get all transfers
+	response, err := client.SubAccountTransferHistory(nil)
+	if err != nil {
+		t.Logf("API Error (this may be expected for non-sub-accounts): %v", err)
+		return
+	}
+
+	var result []map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		t.Logf("Raw response: %s", string(response))
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Sub-account transfer history (%d records):\n%s", len(result), string(prettyJSON))
+}
+
+func TestSubAccountTransferHistoryWithParams(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	// Get only withdrawals (type=2 = transfers OUT to master)
+	response, err := client.SubAccountTransferHistory(map[string]interface{}{
+		"type":  2,
+		"limit": 10,
+	})
+	if err != nil {
+		t.Logf("API Error (this may be expected for non-sub-accounts): %v", err)
+		return
+	}
+
+	var result []map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Sub-account withdrawals (type=2, %d records):\n%s", len(result), string(prettyJSON))
+}
+
+func TestAccountSnapshot(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	response, err := client.AccountSnapshot("SPOT", nil)
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		t.Logf("Raw response: %s", string(response))
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Account snapshot response:\n%s", string(prettyJSON))
+}
+
+func TestAccountSnapshotWithParams(t *testing.T) {
+	apiKey := os.Getenv("BINANCE_API_KEY")
+	apiSecret := os.Getenv("BINANCE_SECRET_KEY")
+
+	if apiKey == "" || apiSecret == "" {
+		t.Skip("Skipping test: BINANCE_API_KEY and BINANCE_SECRET_KEY environment variables not set")
+	}
+
+	client := NewWalletClient(apiKey, apiSecret)
+
+	response, err := client.AccountSnapshot("SPOT", map[string]interface{}{
+		"limit": 30,
+	})
+	if err != nil {
+		t.Logf("API Error (this may be expected): %v", err)
+		return
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(response, &result); err != nil {
+		t.Errorf("Failed to parse response: %v", err)
+		return
+	}
+
+	prettyJSON, _ := json.MarshalIndent(result, "", "  ")
+	t.Logf("Account snapshot (30 days) response:\n%s", string(prettyJSON))
+}
+
+func TestAccountSnapshotRequiresType(t *testing.T) {
+	client := NewWalletClient("test_key", "test_secret")
+
+	_, err := client.AccountSnapshot("", nil)
+	if err == nil {
+		t.Error("Expected error for empty type, got nil")
+	}
+	t.Logf("Correctly returned error for empty type: %v", err)
+}
